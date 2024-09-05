@@ -5,7 +5,6 @@ import guide_book_2.KTO_public_api_2.entity.UserEntity;
 import guide_book_2.KTO_public_api_2.enums.ProviderEnums;
 import guide_book_2.KTO_public_api_2.error.CustomException;
 import guide_book_2.KTO_public_api_2.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +20,22 @@ public class JoinService {
     }
 
     //@Transactional
+    //로컬 회원가입, 라인 회원가입이 둘 다 들어가야 할 듯 하다.
     public void JoinProcess(UserDTO userDTO) {
+        // 이메일 유효성 검사: null 또는 빈 값인지 확인
+        if (userDTO.getUserEmail() == null || userDTO.getUserEmail().isEmpty()) {
+            throw new CustomException(1001, "Emailは必須項目です");
+        }
+
+        // 비밀번호 유효성 검사: null 또는 빈 값인지 확인
+        if (userDTO.getPassword() == null || userDTO.getPassword().isEmpty()) {
+            throw new CustomException(1002, "Passwordは必須項目です");
+        }
+
         //DBへ同じユーザがあるか確認するメソッドが必要、UserRepositoryでexistsByメソッドを使う
         if (userRepository.existsByUserEmail(userDTO.getUserEmail())) {
-            throw new CustomException(1001, "すでに存在するEmailです"); // 例外処理または好きな方法で対応
-//            같은 이메일로 로그인하면 위 에러 메세지가 출력되지 않는다. 컨트롤러에서 다시 저걸 가지고 출력해야함
+            throw new CustomException(1003, "すでに存在するEmailです"); // 例外処理、エラコード、メッセージ
         } else {
-            //DTOをEntityに変換
             UserEntity data = new UserEntity();
             data.setUserEmail(userDTO.getUserEmail());
             data.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));

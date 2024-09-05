@@ -19,22 +19,7 @@ public class JoinAPI {
         this.joinService = joinService;
     }
 
-    @GetMapping("/main")
-    public String MainPage() {
-        return "main";
-    }
-
-    @GetMapping("/login")
-    public String LoginPage() {
-        return "login";
-    }
-
-    @GetMapping("/join")
-    public String JoinPage() {
-        return "join";
-    }
-
-    //フロントでリダイレクトする方法
+    //フロントでリダイレクトするコード
     @PostMapping("/joinProc")
     public ResponseEntity<String> JoinProcess(@RequestBody UserDTO userDTO) {
         try {
@@ -44,22 +29,22 @@ public class JoinAPI {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(String.format("{\"error_id\": %d, \"error_message\": \"%s\"}", e.getErrorCode(), e.getMessage()));
         }
-
-//        catch (Exception e) {
-//            // 예외 처리 로직
-//            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed");
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-    }
-   /*　サーバ側のリダイレクトする方法
+        /*
+        catch (Exception e) {
+            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed");
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        */
+        /*　サーバ側のリダイレクトする方法
     @PostMapping("/joinProc")
     public RedirectView JoinProcess(@RequestBody UserDTO userDTO) {
         try {
             joinService.JoinProcess(userDTO);
             return new RedirectView("/login");
         } catch (Exception e) {
-            // 예외 처리 로직
             return new RedirectView("/join?error=true");
         }
-    }*/
+    }
+    */
+    }
 }

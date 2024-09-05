@@ -3,9 +3,15 @@ package guide_book_2.KTO_public_api_2.service;
 import guide_book_2.KTO_public_api_2.dto.BookmarkDTO;
 import guide_book_2.KTO_public_api_2.entity.BookmarkEntity;
 import guide_book_2.KTO_public_api_2.entity.UserEntity;
+import guide_book_2.KTO_public_api_2.error.CustomException;
 import guide_book_2.KTO_public_api_2.repository.BookmarkRepository;
 import guide_book_2.KTO_public_api_2.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service//ブックマークについてのサービス
 public class BookmarkService {
@@ -18,28 +24,49 @@ public class BookmarkService {
         this.userRepository = userRepository;
     }
 
-    //作成
-    public void addBookmark(BookmarkDTO bookmarkDTO) {
-        // 유효성 검사: 빈 값인지 확인
-        if (bookmarkDTO.getUserId() == null || bookmarkDTO.getContentId() == null) {
-            throw new IllegalArgumentException("User ID and Content ID must not be null");
-        }
-
-        // UserEntity를 조회하여 확인
-        UserEntity userEntity = userRepository.findById(bookmarkDTO.getUserId())
+    //ユーザーidでボックマークの全てを読み込む
+    public List<Map<String, Object>> getBookmarksByUserId(Long userId) {
+        //findByIdを利用してユーザーがあるかを先に検査
+        UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // 북마크 추가
+        //ある場合全てのBookmarkEntityを変換
+        List<BookmarkEntity> bookmarks = bookmarkRepository.findAllByUserId(userEntity);
+
+        return bookmarks.stream()
+                .map(bookmark -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("contentId", bookmark.getContentId());
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public void addBookmark(BookmarkDTO bookmarkDTO) {
+        // 有効性検査:空値であることを確認
+        if (bookmarkDTO.getUserId() == null || bookmarkDTO.getContentId() == null) {
+            throw new CustomException(1004, "User ID and Content ID must not be null");
+            //throw new IllegalArgumentException("User ID and Content ID must not be null");
+        }
+
+        // UserEntityからユーザーを確認
+        UserEntity userEntity = userRepository.findById(bookmarkDTO.getUserId())
+                .orElseThrow(() -> new CustomException(1005, "User not found")
+                        //new IllegalArgumentException("User not found")
+        );
+        // ブックマーク作成
         BookmarkEntity bookmarkEntity = new BookmarkEntity();
         bookmarkEntity.setUserId(userEntity); // UserEntity 설정
         bookmarkEntity.setContentId(bookmarkDTO.getContentId());
 
-        // 중복 검사 또는 유니크 체크
+        // 重複検査またはユニークチェック
         if (bookmarkRepository.existsByUserIdAndContentId(userEntity, bookmarkDTO.getContentId())) {
-            throw new IllegalArgumentException("Bookmark already exists");
+            throw new CustomException(1006, "Bookmark already exists");
+            //throw new IllegalArgumentException("Bookmark already exists");
         }
 
         bookmarkRepository.save(bookmarkEntity);
     }
+
 }
 

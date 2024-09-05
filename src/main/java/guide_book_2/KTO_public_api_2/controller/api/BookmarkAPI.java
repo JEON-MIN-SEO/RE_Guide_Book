@@ -1,12 +1,15 @@
 package guide_book_2.KTO_public_api_2.controller.api;
 
 import guide_book_2.KTO_public_api_2.dto.BookmarkDTO;
+import guide_book_2.KTO_public_api_2.error.ApiResponse;
+import guide_book_2.KTO_public_api_2.error.CustomException;
 import guide_book_2.KTO_public_api_2.service.BookmarkService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 //CRUD 「作成（Create）」「読み出し（Read）」「更新（Update）」「削除（Delete）」
 @RestController
@@ -19,13 +22,40 @@ public class BookmarkAPI {
         this.bookmarkService = bookmarkService;
     }
 
+    // ユーザーIDでブックマークリスト照会(しょうかい, 조회）
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getBookmarksByUserId(@PathVariable("userId") Long userId) {
+        //@PathVariable("userId")이걸 왜 지정해야 하는지 찾아보기 맵핑이 안되는지 확인
+        try {
+            List<Map<String, Object>> bookmarks = bookmarkService.getBookmarksByUserId(userId);
+            ApiResponse<List<Map<String, Object>>> response = new ApiResponse<>(bookmarks);
+            return ResponseEntity.ok(response);
+        } catch (CustomException e) {
+            ApiResponse<List<Map<String, Object>>> errorResponse = new ApiResponse<>(e.getErrorCode(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+//        try {
+//            List<BookmarkEntity> bookmarks = bookmarkService.getBookmarksByUserId(userId);
+//            return ResponseEntity.ok(bookmarks);
+//        } catch (CustomException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body(String.format("{\"error_id\": %d, \"error_message\": \"%s\"}", e.getErrorCode(), e.getMessage()));
+//        }
+    }
+
     @PostMapping("/add")
     public ResponseEntity<String> addBookmark(@RequestBody BookmarkDTO bookmarkDTO) {
         try {
             bookmarkService.addBookmark(bookmarkDTO);
             return ResponseEntity.ok("Bookmark added successfully");
-        } catch (IllegalArgumentException e) {
+        } catch (CustomException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(String.format("{\"error_id\": %d, \"error_message\": \"%s\"}", e.getErrorCode(), e.getMessage()));
+        }
+        /* 基本エラー勝利コード
+        catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+        */
     }
 }

@@ -17,7 +17,7 @@ public class BookmarkEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonIgnore //객체를 json으로 직렬화 하지 않는 어노테이션 즉, Json으로 만들지 않고 보낸다.
+    //@JsonIgnore //객체를 json으로 직렬화 하지 않는 어노테이션 즉, Json으로 만들지 않고 보낸다.
     @ManyToOne(fetch = FetchType.LAZY) //여러 BookmarkEntity가 하나의 UserEntity에 연결되는 다대일(Many-to-One) 관계를 설정합니다.
     @JoinColumn(name = "user_id")
     private UserEntity userId; //UserEntityのPK（主キ）をuserIdに設定する
