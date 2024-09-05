@@ -1,6 +1,7 @@
 package guide_book_2.KTO_public_api_2.controller.api;
 
 import guide_book_2.KTO_public_api_2.dto.UserDTO;
+import guide_book_2.KTO_public_api_2.error.CustomException;
 import guide_book_2.KTO_public_api_2.service.JoinService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Controller("/join")
+@Controller
 public class JoinAPI {
 
     private final JoinService joinService;
@@ -18,7 +19,7 @@ public class JoinAPI {
         this.joinService = joinService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/main")
     public String MainPage() {
         return "main";
     }
@@ -39,10 +40,16 @@ public class JoinAPI {
         try {
             joinService.JoinProcess(userDTO);
             return ResponseEntity.status(HttpStatus.OK).body("User registered successfully");
-        } catch (Exception e) {
-            // 예외 처리 로직
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed");
+        } catch (CustomException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(String.format("{\"error_id\": %d, \"error_message\": \"%s\"}", e.getErrorCode(), e.getMessage()));
         }
+
+//        catch (Exception e) {
+//            // 예외 처리 로직
+//            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed");
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
     }
    /*　サーバ側のリダイレクトする方法
     @PostMapping("/joinProc")

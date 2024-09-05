@@ -23,7 +23,7 @@ public class SecurityConfig {
         //Springのバージョンによって使い方が変わるので注意
         http
                 .authorizeHttpRequests((auth)->auth //requestMatchers()は特定なアドレスを意味する
-                        .requestMatchers("/", "/login", "join", "joinProc").permitAll()
+                        .requestMatchers("/**", "/login", "/join/joinProc","/api/bookmark/**").permitAll()
                         //permitAll()はみんなに接続を許可します
                         .requestMatchers("/home/**","bookMark/**","guideBook/**").authenticated()
                         //authenticated()はログイン後に接続できます
