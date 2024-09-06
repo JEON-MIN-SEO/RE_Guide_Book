@@ -34,23 +34,17 @@ public class BookmarkAPI {
             ApiResponse<List<Map<String, Object>>> errorResponse = new ApiResponse<>(e.getErrorCode(), e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
-//        try {
-//            List<BookmarkEntity> bookmarks = bookmarkService.getBookmarksByUserId(userId);
-//            return ResponseEntity.ok(bookmarks);
-//        } catch (CustomException e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//                    .body(String.format("{\"error_id\": %d, \"error_message\": \"%s\"}", e.getErrorCode(), e.getMessage()));
-//        }
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addBookmark(@RequestBody BookmarkDTO bookmarkDTO) {
+    public ResponseEntity<ApiResponse<String>> addBookmark(@RequestBody BookmarkDTO bookmarkDTO) {
         try {
             bookmarkService.addBookmark(bookmarkDTO);
-            return ResponseEntity.ok("Bookmark added successfully");
+            ApiResponse<String> response = new ApiResponse<>("Bookmark added successfully");
+            return ResponseEntity.ok(response);
         } catch (CustomException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(String.format("{\"error_id\": %d, \"error_message\": \"%s\"}", e.getErrorCode(), e.getMessage()));
+            ApiResponse<String> errorResponse = new ApiResponse<>(e.getErrorCode(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
         /* 基本エラー勝利コード
         catch (IllegalArgumentException e) {
@@ -58,4 +52,17 @@ public class BookmarkAPI {
         }
         */
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ApiResponse<String>> deleteBookmark(@RequestParam Long userId, @RequestParam String contentId) {
+        try {
+            bookmarkService.deleteBookmark(userId, contentId);
+            ApiResponse<String> response = new ApiResponse<>("Bookmark deleted successfully");
+            return ResponseEntity.ok(response);
+        } catch (CustomException e) {
+            ApiResponse<String> errorResponse = new ApiResponse<>(e.getErrorCode(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+    }
+
 }

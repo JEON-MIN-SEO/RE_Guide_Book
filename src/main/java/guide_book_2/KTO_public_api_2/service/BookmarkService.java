@@ -28,7 +28,7 @@ public class BookmarkService {
     public List<Map<String, Object>> getBookmarksByUserId(Long userId) {
         //findByIdを利用してユーザーがあるかを先に検査
         UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new CustomException( 1007, "User not found"));
 
         //ある場合全てのBookmarkEntityを変換
         List<BookmarkEntity> bookmarks = bookmarkRepository.findAllByUserId(userEntity);
@@ -68,5 +68,17 @@ public class BookmarkService {
         bookmarkRepository.save(bookmarkEntity);
     }
 
-}
+    public void deleteBookmark(Long userId, String contentId) {
+        // 유저와 북마크가 존재하는지 확인
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(1001, "User not found"));
+
+        BookmarkEntity bookmarkEntity = bookmarkRepository.findByUserIdAndContentId(userEntity, contentId)
+                .orElseThrow(() -> new CustomException(1002, "Bookmark not found"));
+
+        // 북마크 삭제
+        bookmarkRepository.delete(bookmarkEntity);
+        }
+    }
+
 

@@ -27,6 +27,7 @@ public class SecurityConfig {
                         //permitAll()はみんなに接続を許可します
                         .requestMatchers("/home/**","bookMark/**","guideBook/**").authenticated()
                         //authenticated()はログイン後に接続できます
+                        //.requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated());
         //.anyRequest()は他に設定できなかった他の経路を設定します
         //.requestMatchers("/home/**")で**はワイルドカードを意味し/home/　後に来るURL全てを意味します
