@@ -54,7 +54,7 @@ public class BookmarkAPI {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ApiResponse<String>> deleteBookmark(@RequestParam Long userId, @RequestParam String contentId) {
+    public ResponseEntity<ApiResponse<String>> deleteBookmark(@RequestParam("userId") Long userId, @RequestParam("contentId ") String contentId) {
         try {
             bookmarkService.deleteBookmark(userId, contentId);
             ApiResponse<String> response = new ApiResponse<>("Bookmark deleted successfully");

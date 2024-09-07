@@ -11,18 +11,18 @@ import jakarta.persistence.*;
 @Setter
 @Table(name = "days")
 public class DayEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "day_number")
+    @Column(name = "day_number", nullable = false)
     private int dayNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY) //（関連したEntityを実際利用する前にはロードしない）
-    @JoinColumn(name = "guidebook_id")
-    private GuidebookEntity guidebookId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "guidebook_id", nullable = false)
+    private GuidebookEntity guidebook;
 
-    @Column(name = "content_Json",columnDefinition = "TEXT")
-    private String contentJson;
+    @Column(name = "content_json", columnDefinition = "TEXT")
+    private String contentJson; // JSON 형식의 콘텐츠 데이터를 저장
+
 }
