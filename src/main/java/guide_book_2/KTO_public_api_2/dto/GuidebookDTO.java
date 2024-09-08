@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class GuidebookDTO {
+    private Long id;
     private Long userId;  // User의 ID
     private String title; // Guidebook 제목
     private String destination;  // 여행지
