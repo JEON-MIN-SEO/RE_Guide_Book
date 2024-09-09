@@ -35,7 +35,7 @@ public class GuidebookService {
     @Transactional(readOnly = true)
     public List<GuidebookDTO> getGuidebooksByUserId(Long userId) {
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new CustomException(1005, "User not found"));
 
         List<GuidebookEntity> guidebooks = guidebookRepository.findByUserId(user);
         return guidebooks.stream().map(this::convertToDTO).collect(Collectors.toList());
@@ -60,11 +60,10 @@ public class GuidebookService {
         return dto;
     }
 
-
     @Transactional
     public void createGuidebook(GuidebookDTO guidebookDTO) {
         UserEntity user = userRepository.findById(guidebookDTO.getUserId())
-                .orElseThrow(() -> new CustomException(1002, "User not found"));
+                .orElseThrow(() -> new CustomException(1005, "User not found"));
 
         GuidebookEntity guidebook = new GuidebookEntity();
         guidebook.setTitle(guidebookDTO.getTitle());
@@ -97,48 +96,28 @@ public class GuidebookService {
         }
     }
 
-    /*@Transactional
-    public void addDayToGuidebook(Long guidebookId, DayDTO dayDTO) {
-        GuidebookEntity guidebook = guidebookRepository.findById(guidebookId)
-                .orElseThrow(() -> new IllegalArgumentException("Guidebook not found"));
-
-        DayEntity day = new DayEntity();
-        day.setDayNumber(dayDTO.getDayNumber());
-        day.setGuidebook(guidebook);
-        day.setContentJson(convertContentIdsToJson(dayDTO.getContentIds()));
-
-        dayRepository.save(day);
-    }
-
-    private String convertContentIdsToJson(List<String> contentIds) {
-        return String.join(",", contentIds);
-    }*/
-
     @Transactional
     public void updateDaysInGuidebook(Long guidebookId, List<DayDTO> dayDTOs) {
         GuidebookEntity guidebook = guidebookRepository.findById(guidebookId)
-                .orElseThrow(() -> new IllegalArgumentException("Guidebook not found"));
+                    .orElseThrow(() -> new CustomException(1005, "Guidebook not found"));
 
         for (DayDTO dayDTO : dayDTOs) {
             DayEntity day = dayRepository.findByGuidebookAndDayNumber(guidebook, dayDTO.getDayNumber())
-                    .orElseThrow(() -> new IllegalArgumentException("Day not found"));
+                    .orElseThrow(() -> new CustomException(1005, "Day not found"));
 
             day.setContentJson(convertContentIdsToJson(dayDTO.getContentIds()));
             dayRepository.save(day);
         }
     }
 
-
     private String convertContentIdsToJson(List<String> contentIds) {
         return String.join(",", contentIds);
     }
 
-
-
     @Transactional(readOnly = true)
     public GuidebookDTO getGuidebookById(Long guidebookId) {
         GuidebookEntity guidebook = guidebookRepository.findById(guidebookId)
-                .orElseThrow(() -> new IllegalArgumentException("Guidebook not found"));
+                .orElseThrow(() -> new CustomException(1005, "Guidebook not found"));
 
         // GuidebookDTO로 변환
         GuidebookDTO guidebookDTO = new GuidebookDTO();
@@ -177,7 +156,7 @@ public class GuidebookService {
     @Transactional
     public void deleteGuidebook(Long guidebookId) {
         GuidebookEntity guidebook = guidebookRepository.findById(guidebookId)
-                .orElseThrow(() -> new IllegalArgumentException("Guidebook not found"));
+                .orElseThrow(() -> new CustomException(1005, "Guidebook not found"));
 
         // 가이드북에 관련된 모든 DayEntity 삭제
         dayRepository.deleteByGuidebook(guidebook);

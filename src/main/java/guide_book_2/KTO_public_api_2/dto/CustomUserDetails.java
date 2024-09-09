@@ -56,4 +56,8 @@ public class CustomUserDetails implements UserDetails {
         //return UserDetails.super.isEnabled();
         return true;
     }
+
+    public UserEntity getUserEntity() {
+        return this.userEntity; // UserEntity에서 직접 ID를 가져오기 위한 메서드
+    }
 }
