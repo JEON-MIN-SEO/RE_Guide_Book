@@ -36,6 +36,8 @@ public class JWTUtil {
 
     public String createJwt(Long userId, Long expiredMs) { //String role
 
+        long expirationTimeMs = 604800000L; // 7 days in milliseconds
+
         return Jwts.builder()
                 .claim("userId", userId)
                 //.claim("role", role)
