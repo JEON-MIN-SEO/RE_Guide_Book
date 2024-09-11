@@ -29,6 +29,11 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {
+        return null;  // 이 부분은 다른 용도로 username을 반환
+    }
+
+    // LineUserId 반환하는 메서드 추가
+    public String getLineUserId() {
         return userDTO.getLineId();
     }
 }

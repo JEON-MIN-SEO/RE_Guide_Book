@@ -22,7 +22,7 @@ public class UserEntity {
     private String password;
 
     @Column(name = "line_user_id")
-    private String lineUserId;
+    private String lineId;
 
     @Column(name = "provider")
     private ProviderEnums provider;

@@ -1,6 +1,7 @@
 package guide_book_2.KTO_public_api_2.controller.api;
 
 import guide_book_2.KTO_public_api_2.dto.UserDTO;
+import guide_book_2.KTO_public_api_2.error.ApiResponse;
 import guide_book_2.KTO_public_api_2.error.CustomException;
 import guide_book_2.KTO_public_api_2.service.JoinService;
 import org.springframework.http.HttpStatus;
@@ -20,13 +21,14 @@ public class JoinAPI {
 
     //フロントでリダイレクトするコード
     @PostMapping("/joinProc")
-    public ResponseEntity<String> JoinProcess(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<ApiResponse<String>> JoinProcess(@RequestBody UserDTO userDTO) {
         try {
             joinService.JoinProcess(userDTO);
-            return ResponseEntity.status(HttpStatus.OK).body("User registered successfully");
+            ApiResponse<String> response = new ApiResponse<>("User registered successfully");
+            return ResponseEntity.ok(response);
         } catch (CustomException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(String.format("{\"error_id\": %d, \"error_message\": \"%s\"}", e.getErrorCode(), e.getMessage()));
+            ApiResponse<String> errorResponse = new ApiResponse<>(e.getErrorCode(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
         /*
         catch (Exception e) {

@@ -46,7 +46,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (existData == null) {
 
             UserEntity userEntity = new UserEntity();
-            userEntity.setLineUserId(username);
+            userEntity.setLineId(username);
             userEntity.setProvider(ProviderEnums.LINE);
 
             userRepository.save(userEntity);
@@ -58,7 +58,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new CustomOAuth2User(userDTO);
         }
         else {
-            existData.setLineUserId(oAuth2Response.getProviderId());
+            existData.setLineId(oAuth2Response.getProviderId());
 
             userRepository.save(existData);
 

@@ -24,10 +24,14 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", Long.class);
     }
 
-//    public String getRole(String token) {
-//
-//        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
-//    }
+    public String getUserLineId(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("userId", String.class);
+    }
 
     public Boolean isExpired(String token) {
 
@@ -35,6 +39,19 @@ public class JWTUtil {
     }
 
     public String createJwt(Long userId, Long expiredMs) { //String role
+
+        long expirationTimeMs = 604800000L; // 7 days in milliseconds
+
+        return Jwts.builder()
+                .claim("userId", userId)
+                //.claim("role", role)
+                .issuedAt(new Date(System.currentTimeMillis())) //현재 발행 시간
+                .expiration(new Date(System.currentTimeMillis() + expiredMs)) //언제 소멸 할건지
+                .signWith(secretKey) //암호화
+                .compact(); //토큰 컴팩
+    }
+
+    public String createLineJwt(String userId, Long expiredMs) { //String role
 
         long expirationTimeMs = 604800000L; // 7 days in milliseconds
 
