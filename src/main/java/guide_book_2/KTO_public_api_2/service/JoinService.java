@@ -19,8 +19,6 @@ public class JoinService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    //@Transactional
-    //로컬 회원가입, 라인 회원가입이 둘 다 들어가야 할 듯 하다.
     public void JoinProcess(UserDTO userDTO) {
         // 이메일 유효성 검사: null 또는 빈 값인지 확인
         if (userDTO.getUserEmail() == null || userDTO.getUserEmail().isEmpty()) {
@@ -45,22 +43,3 @@ public class JoinService {
         }
     }
 }
-/* 로컬회원가입, 간편회원가입에 각자 null인지 체크하는 로직
-
-public void JoinProcess(@Valid UserDTO userDTO) {
-    if (userDTO.getProvider() == ProviderEnums.LOCAL) {
-        // 로컬 로그인일 경우 이메일과 비밀번호가 필수
-        if (userDTO.getUserEmail() == null || userDTO.getPassword() == null) {
-            throw new IllegalArgumentException("Email and password must be provided for local login");
-        }
-    } else if (userDTO.getProvider() == ProviderEnums.SOCIAL) {
-        // 소셜 로그인일 경우 lineId가 필수
-        if (userDTO.getLineId() == null) {
-            throw new IllegalArgumentException("Line ID must be provided for social login");
-        }
-    } else {
-        throw new IllegalArgumentException("Invalid provider");
-    }
-
-    // Save user logic
-}*/

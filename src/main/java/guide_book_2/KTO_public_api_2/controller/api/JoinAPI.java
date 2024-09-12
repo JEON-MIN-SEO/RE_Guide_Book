@@ -30,22 +30,5 @@ public class JoinAPI {
             ApiResponse<String> errorResponse = new ApiResponse<>(e.getErrorCode(), e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
-        /*
-        catch (Exception e) {
-            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed");
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-        */
-        /*　サーバ側のリダイレクトする方法
-    @PostMapping("/joinProc")
-    public RedirectView JoinProcess(@RequestBody UserDTO userDTO) {
-        try {
-            joinService.JoinProcess(userDTO);
-            return new RedirectView("/login");
-        } catch (Exception e) {
-            return new RedirectView("/join?error=true");
-        }
-    }
-    */
     }
 }

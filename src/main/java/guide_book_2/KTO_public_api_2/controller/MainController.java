@@ -6,18 +6,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class MainController {
 
-    @GetMapping("/main")
+    // 로그인 페이지로 이동
+    @GetMapping("/loginP")
     public String MainPage() {
-        return "main";
-    }
-
-    @GetMapping("/login")
-    public String LoginPage() {
         return "login";
     }
 
-    @GetMapping("/join")
-    public String JoinPage() {
-        return "join";
+    // 회원가입 페이지로 이동
+    @GetMapping("/signup")
+    public String signupPage() {
+        return "signup";  // signup.html로 이동
     }
 }

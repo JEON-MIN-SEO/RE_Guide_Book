@@ -14,8 +14,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -110,7 +108,7 @@ public class SecurityConfig {
                 .csrf((auth)->auth.disable());
 
         http
-                .formLogin((auth) -> auth.loginPage("/login")
+                .formLogin((auth) -> auth.loginPage("/loginP")
                         .loginProcessingUrl("/loginProc")
                         /*
                         "/loginProc"がにフォームに入力したusernameやpasswordを含むリクエストが/loginProcに送信され、
@@ -126,18 +124,17 @@ public class SecurityConfig {
                 */
 
 
-        //http
-        //        .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
-
-        //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
-        http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
-
-
         //세션을 스테이리스 상태
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        // JWT 필터 설정
+        http
+                .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                //로그인 필터 설정
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
 
         //oauth2
         http

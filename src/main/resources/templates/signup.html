@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .signup-container {
+            width: 300px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px;
+            width: 100%;
+            margin-top: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: #ff4d4d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+<div class="signup-container">
+    <h2>회원가입</h2>
+    <form id="signupForm">
+        <label for="userEmail">이메일</label>
+        <input type="email" id="userEmail" name="userEmail" placeholder="이메일" required>
+        <label for="password">비밀번호</label>
+        <input type="password" id="password" name="password" placeholder="비밀번호" required>
+        <button type="submit">회원가입</button>
+    </form>
+    <p>이미 계정이 있으신가요? <a href="#" th:href="@{/login}">로그인</a></p>
+
+    <!-- Error Display -->
+    <div id="errorContainer" class="error" style="display: none;"></div>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const userEmail = document.getElementById('userEmail').value;
+            const password = document.getElementById('password').value;
+
+            fetch('/joinProc', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userEmail: userEmail,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.errorId) {
+                    document.getElementById('errorContainer').innerText = data.errorMessage;
+                    document.getElementById('errorContainer').style.display = 'block';
+                } else {
+                    window.location.href = '/login'; // 가입 성공 후 로그인 페이지로 리다이렉트
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('errorContainer').innerText = '서버 오류 발생';
+                document.getElementById('errorContainer').style.display = 'block';
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
