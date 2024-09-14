@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+//로그인 필터 (성공시 JWT 발급)
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
@@ -44,18 +45,22 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // CustomUserDetails에서 userId를 가져옴
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        Long userId = customUserDetails.getUserEntity().getId(); // 사용자 ID 추출
+        // 사용자 ID 추출
+        Long userId = customUserDetails.getUserEntity().getId();
 
-        //권한을 찾는 메서드
-//        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-//        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-//        GrantedAuthority auth = iterator.next();
+        /*
+        Roll(권한)을 찾는 메서드
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+        GrantedAuthority auth = iterator.next();
 
-        //String role = auth.getAuthority();
+        String role = auth.getAuthority();
+        */
 
         // JWT 생성 (userId를 포함하여)
-        String token = jwtUtil.createJwt(userId, 60*60*10L);
+        String token = jwtUtil.createJwt(userId); //(userId, 60*60*10L)로 소멸 시간 저장 가능
 
+        //반환할때 { Authorization : Bearer 토큰 넘버}로 구성되어야 한다.
         response.addHeader("Authorization", "Bearer " + token);
     }
 

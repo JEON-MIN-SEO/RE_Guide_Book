@@ -3,7 +3,7 @@ package guide_book_2.KTO_public_api_2.config;
 import guide_book_2.KTO_public_api_2.jwt.JWTFilter;
 import guide_book_2.KTO_public_api_2.jwt.JWTUtil;
 import guide_book_2.KTO_public_api_2.jwt.LoginFilter;
-import guide_book_2.KTO_public_api_2.ouath2.CustomSuccessHandler;
+//import guide_book_2.KTO_public_api_2.ouath2.CustomSuccessHandler;
 import guide_book_2.KTO_public_api_2.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
@@ -29,14 +29,14 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final CustomSuccessHandler customSuccessHandler;
+    //private final CustomSuccessHandler customSuccessHandler;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, CustomOAuth2UserService customOAuth2UserService) {
 
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.customOAuth2UserService = customOAuth2UserService;
-        this.customSuccessHandler = customSuccessHandler;
+      //  this.customSuccessHandler = customSuccessHandler;
     }
     //AuthenticationManager Bean 등록
     @Bean
@@ -78,9 +78,9 @@ public class SecurityConfig {
         //Springのバージョンによって使い方が変わるので注意
         http
                 .authorizeHttpRequests((auth)->auth //requestMatchers()は特定なアドレスを意味する
-                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/","/login","/join","joinProc").permitAll()
                         //permitAll()はみんなに接続を許可します
-                        //.requestMatchers().authenticated() 로그인을 해야 접근 가능한 곳
+                        .requestMatchers("/api/**").authenticated() //로그인을 해야 접근 가능한 곳
                         //authenticated()はログイン後に接続できます
                         //.requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated());
@@ -131,6 +131,7 @@ public class SecurityConfig {
 
         // JWT 필터 설정
         http
+                //JWT 검증 필터
                 .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 //로그인 필터 설정
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
