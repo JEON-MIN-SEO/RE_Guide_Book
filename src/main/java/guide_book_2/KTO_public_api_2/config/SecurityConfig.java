@@ -3,7 +3,6 @@ package guide_book_2.KTO_public_api_2.config;
 import guide_book_2.KTO_public_api_2.jwt.JWTFilter;
 import guide_book_2.KTO_public_api_2.jwt.JWTUtil;
 import guide_book_2.KTO_public_api_2.jwt.LoginFilter;
-//import guide_book_2.KTO_public_api_2.ouath2.CustomSuccessHandler;
 import guide_book_2.KTO_public_api_2.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +13,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.oidc.authentication.OidcIdTokenDecoderFactory;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwtDecoderFactory;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -51,6 +54,16 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
     //BCryptはパスワードの暗号化に使用できるメソッド
+
+
+    //디코드
+    @Bean
+    public JwtDecoderFactory<ClientRegistration> idTokenDecoderFactory() {
+        OidcIdTokenDecoderFactory idTokenDecoderFactory = new OidcIdTokenDecoderFactory();
+        idTokenDecoderFactory.setJwsAlgorithmResolver(clientRegistration -> MacAlgorithm.HS256);
+        return idTokenDecoderFactory;
+    }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

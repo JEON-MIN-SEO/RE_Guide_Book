@@ -22,17 +22,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         this.userRepository = userRepository;
     }
 
-
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
+        System.out.println("CustomOAuthUserService.loadUser");
+
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        System.out.println(oAuth2User);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
+                .getUserInfoEndpoint().getUserNameAttributeName();
+
+        System.out.println(registrationId);
+        System.out.println(userNameAttributeName);
+
         OAuth2Response oAuth2Response = null;
         //어느 플랫폼 정보인지 확인
-        if (registrationId.equals("LINE")) {
+        if (registrationId.equals("line")) {
+
 
             oAuth2Response = new LineResponse(oAuth2User.getAttributes());
         }else {
@@ -40,9 +47,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return null;
         }
 
+        System.out.println("LINE 사용자 정보 응답: " + oAuth2User.getAttributes());
+
         //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
-        UserEntity existData = userRepository.findByLineId(username);
+        System.out.println(username);
+
+        //UserEntity existData = userRepository.findByLineId(username);
+        // 사용자 검색 부분 수정
+        UserEntity existData = userRepository.findByLineId(oAuth2Response.getProviderId());
+
+
         if (existData == null) {
 
             UserEntity userEntity = new UserEntity();
@@ -55,7 +70,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userDTO.setLineId(username);
             userDTO.setProvider(ProviderEnums.LINE);
 
-            return new CustomOAuth2User(userDTO);
+            return new CustomOAuth2User(userDTO, oAuth2User.getAttributes());
         }
         else {
             existData.setLineId(oAuth2Response.getProviderId());
@@ -66,7 +81,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userDTO.setLineId(oAuth2Response.getProviderId());
             userDTO.setProvider(ProviderEnums.LINE);
 
-            return new CustomOAuth2User(userDTO);
+            return new CustomOAuth2User(userDTO, oAuth2User.getAttributes());
         }
     }
 }

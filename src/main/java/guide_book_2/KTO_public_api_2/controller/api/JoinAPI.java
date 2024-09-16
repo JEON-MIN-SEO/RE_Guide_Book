@@ -7,8 +7,10 @@ import guide_book_2.KTO_public_api_2.service.JoinService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class JoinAPI {
@@ -30,5 +32,11 @@ public class JoinAPI {
             ApiResponse<String> errorResponse = new ApiResponse<>(e.getErrorCode(), e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
+    }
+
+    @GetMapping("/oauth2/code/line")
+    public String signinKakao(@RequestParam String code) {
+        System.out.println("code = " + code);
+        return "test";
     }
 }
